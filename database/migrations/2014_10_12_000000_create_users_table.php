@@ -11,9 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Check if the 'users' table already exists
+        // Check if the migrations table doesn't exist
+        if (!Schema::hasTable('migrations')) {
+            // Create the migrations table
+            Schema::create('migrations', function (Blueprint $table) {
+                $table->id();
+                $table->string('migration');
+                $table->integer('batch');
+            });
+        }
+
+        // Check if the 'users' table doesn't exist
         if (!Schema::hasTable('users')) {
-            // Create the 'users' table if it doesn't exist
+            // Create the 'users' table
             Schema::create('users', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
@@ -31,9 +41,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Check if the 'users' table exists before dropping it
+        // Drop the 'users' table if it exists
         if (Schema::hasTable('users')) {
             Schema::dropIfExists('users');
+        }
+
+        // Drop the migrations table if it exists
+        if (Schema::hasTable('migrations')) {
+            Schema::dropIfExists('migrations');
         }
     }
 };
